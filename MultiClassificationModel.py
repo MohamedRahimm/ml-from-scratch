@@ -1,3 +1,5 @@
+from sklearn.metrics import accuracy_score
+from sklearn.linear_model import LogisticRegression
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -5,8 +7,9 @@ import pickle
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, precision_score, recall_score, f1_score
 
-seed = np.random.randint(0, 1e4)
-np.random.seed(3433)
+
+seed = np.random.randint(0, 1e5)
+np.random.seed(seed)
 data = pd.read_csv("obesity_data.csv")
 data = np.array(data)
 m, n = data.shape
@@ -19,7 +22,7 @@ data[data == "Normal weight"] = 1
 data[data == "Overweight"] = 2
 data[data == "Obese"] = 3
 # np.random.shuffle(data)
-# design matrix (features,examples)
+# design matrix (samples,features/classes)
 scaler = StandardScaler()
 data = data
 X_data = data[:, :-1]
@@ -48,7 +51,7 @@ Y_validation_one_hot = one_hot(Y_validation)
 
 
 class Model:
-    def __init__(self, lr, dropout_keep_rate=1, l2_reg=0):
+    def __init__(self, lr, dropout_keep_rate, l2_reg):
         self.layers = []
         self.dropout_k_rate = dropout_keep_rate
         self.l2_reg = l2_reg
@@ -62,20 +65,17 @@ class Model:
 
     def train_loss_forward(self, Y_pred, Y_true):
         lamb = self.l2_reg
-        eps = 1e-10
-        cost = -(1/m) * np.sum(Y_true * np.log(Y_pred+eps))
-        if (lamb != 0):
-            weights = self.weights
-            w_squared_sum = 0
-            for W in weights:
-                w_squared_sum += np.sum(np.square(W))
-            l2_cost = (lamb/(2*m))*w_squared_sum
-            cost += l2_cost
+        cost = -(1/m) * np.sum(Y_true * np.log(Y_pred))
+        weights = self.weights
+        w_squared_sum = 0
+        for W in weights:
+            w_squared_sum += np.sum(np.square(W))
+        l2_cost = (lamb/(2*m))*w_squared_sum
+        cost += l2_cost
         return cost
 
     def valid_loss_forward(self, Y_pred, Y_true):
-        eps = 1e-10
-        cost = -(1/m) * np.sum(Y_true * np.log(Y_pred+eps))
+        cost = -(1/m) * np.sum(Y_true * np.log(Y_pred))
         return cost
 
     def add_layer(self, layer):
@@ -91,9 +91,6 @@ class Model:
         self.D_masks = []
         self.act_prime = []
         keep_prob = self.dropout_k_rate
-        dropout = False
-        if (keep_prob >= 1):
-            dropout = True
         for layer in self.layers:
             layer_input = layer.forward(layer_input)
             if isinstance(layer, Dense_Layer):
@@ -101,11 +98,12 @@ class Model:
                 self.bias.append(layer.b)
                 self.Z_vals.append(layer_input)
             else:
-                if dropout == True and not isinstance(layer, Softmax):
+                if isinstance(layer, Softmax) == False:
                     D = np.random.rand(
                         layer_input.shape[0], layer_input.shape[1]) < keep_prob
                     A = layer_input * D
                     A = A / keep_prob
+
                     self.A_vals.append(A)
                     self.D_masks.append(D)
                 else:
@@ -127,12 +125,6 @@ class Model:
         if (self.loss == None):
             raise Exception("Loss function was not set")
         if (self.loss == "CELoss"):
-            dropout = False
-            l2 = False
-            if (self.dropout_k_rate >= 1):
-                dropout = True
-            if (self.l2_reg != 0):
-                l2 = True
             A_vals = self.A_vals
             W = self.weights
             Z_vals = self.Z_vals
@@ -149,16 +141,12 @@ class Model:
             n_layers = len(A_vals) - 1
             for i in range(n_layers - 1, 0, -1):
                 dz = np.dot(dz, W[i].T)
-                if dropout:
-                    dz = (dz * D_masks[i - 1]) / self.dropout_k_rate
+                dz = (dz * D_masks[i - 1]) / self.dropout_k_rate
                 dz = dz * a_prime[i - 1](Z_vals[i - 1])
-                dw = np.dot(A_vals[i - 1].T, dz)
-                if l2:
-                    dw += (lamb * W[i - 1]) / m
+                dw = np.dot(A_vals[i - 1].T, dz) + (lamb * W[i - 1]) / m
                 db = np.sum(dz, axis=0, keepdims=True)
                 self.weight_grads.append(dw)
                 self.bias_grads.append(db)
-
             return
 
     def gradient_descent(self):
@@ -286,7 +274,9 @@ class relu:
 class Softmax:
     def forward(self, X):
         X_max = np.max(X, axis=1, keepdims=True)
+
         X_shifted = X - X_max
+
         expX = np.exp(X_shifted)
         return expX / np.sum(expX, axis=1, keepdims=True)
 
@@ -306,18 +296,28 @@ class Dense_Layer:
 
 # with open("pretrained_model.pkl", "rb") as dump_file:
 #     mod = pickle.load(dump_file)
+
+
+# compare to sklearn
+model = LogisticRegression()
+model.fit(X_train, Y_train)
+Y_pred = model.predict(X_test)
+accuracy = accuracy_score(Y_test, Y_pred)
+print(f"accuracy: {accuracy:.3f}\n")
+
+
 epochs = 1000
 lr = 0.15
 keep_prob = 0.4
 l2_lambda = 0.1
 mod = Model(lr=lr, dropout_keep_rate=keep_prob, l2_reg=l2_lambda)
-mod.add_layer(Dense_Layer(X_train.shape[1], 500))
+mod.add_layer(Dense_Layer(X_train.shape[1], 200))
 mod.add_layer(relu())
-mod.add_layer(Dense_Layer(500, 500))
+mod.add_layer(Dense_Layer(200, 200))
 mod.add_layer(relu())
-mod.add_layer(Dense_Layer(500, 500))
+mod.add_layer(Dense_Layer(200, 200))
 mod.add_layer(relu())
-mod.add_layer(Dense_Layer(500, Y_train_one_hot.shape[1]))
+mod.add_layer(Dense_Layer(200, Y_train_one_hot.shape[1]))
 mod.add_layer(Softmax())
 mod.set_loss("CELoss")
 mod.fit(epochs=epochs, patience=85)
