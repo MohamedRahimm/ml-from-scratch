@@ -9,7 +9,7 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, precision_
 
 
 seed = np.random.randint(0, 1e5)
-np.random.seed(seed)
+np.random.seed(0)
 data = pd.read_csv("obesity_data.csv")
 data = np.array(data)
 m, n = data.shape
