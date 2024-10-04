@@ -1,0 +1,11 @@
+.avatar {
+    border-radius: 100%;
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: #151515;
+    border: 1px solid #fff;
+}
+
+.avatar>svg {
+    width: 100%;
+}

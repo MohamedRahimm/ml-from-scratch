@@ -1,0 +1,76 @@
+#dropdown>input:checked~ul {
+    display: inline-block;
+    border-radius: 0 0 var(--dropdown-border-radius) var(--dropdown-border-radius);
+}
+
+#dropdown:has(input:checked) {
+    border-radius: var(--dropdown-border-radius) var(--dropdown-border-radius) 0 0;
+}
+
+#dropdown>input:checked+span>svg {
+    transition: all .15s linear;
+    transform: rotate(180deg);
+
+}
+
+#dropdown>input:not(:checked)+span>svg {
+    transition: all .15s linear;
+    transform: rotate(0deg);
+}
+
+#dropdown>ul {
+    display: none;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    background-color: #444;
+    width: 100%;
+    left: 0;
+    border-radius: var(--dropdown-border-radius);
+    cursor: pointer;
+}
+
+#dropdown>ul>li {
+    padding: var(--dropdown-padding);
+}
+
+#dropdown {
+    --dropdown-padding: 5%;
+    --dropdown-border-radius: 10px;
+    position: relative;
+    width: fit-content;
+    background-color: #444;
+    max-width: 270px;
+    height: max-content;
+    border-radius: var(--dropdown-border-radius);
+}
+
+#dropdown>input {
+    display: inline-block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0px;
+    top: 0px;
+    cursor: pointer;
+    opacity: 0;
+    z-index: 2;
+}
+
+#dropdown>span>svg {
+    width: 3rem;
+}
+
+#dropdown>span {
+    display: flex;
+    text-wrap: nowrap;
+    align-items: center;
+    padding: var(--dropdown-padding);
+    column-gap: 5%;
+}
+
+#dropdown span,
+#dropdown ul {
+    font-weight: 600;
+}
