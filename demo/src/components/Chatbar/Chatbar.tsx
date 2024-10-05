@@ -2,7 +2,7 @@ import { useRef } from "react";
 import "./Chatbar.css";
 import inferModel from "../Models/inferModel.ts";
 import { Convo, Page } from "../../App.tsx";
-import React from "npm:@types/react@^18.3";
+// import React from "npm:@types/react@^18.3";
 
 interface ChatbarProps {
   convo: Convo;

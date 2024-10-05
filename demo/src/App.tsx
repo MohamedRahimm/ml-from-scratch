@@ -27,7 +27,7 @@ export interface Convo {
 export type Page = "Weight Categorizer" | "Sentiment Analysis";
 export default function App() {
     const [convo, setConvo] = useState<Convo>({
-        "messages": new Array<Message[]>(),
+        "messages": new Array<Message>(),
     });
     const pageNames: Page[] = ["Weight Categorizer", "Sentiment Analysis"];
     const [currentPage, setCurrentPage] = useState<Page>(pageNames[0]);
