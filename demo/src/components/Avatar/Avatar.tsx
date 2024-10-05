@@ -1,8 +1,9 @@
 import "./Avatar.css";
+type roles = "system" | "user";
 interface AvatarProps {
-    type: "user" | "model";
+    type: roles;
 }
-const map: Record<string, JSX.Element> = {
+const map: Record<roles, JSX.Element> = {
     "user": (
         <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -17,7 +18,7 @@ const map: Record<string, JSX.Element> = {
             <circle cx="12" cy="10" r="4" />
         </svg>
     ),
-    "model": (
+    "system": (
         <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"

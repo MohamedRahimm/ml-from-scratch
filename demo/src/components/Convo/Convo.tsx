@@ -1,44 +1,32 @@
+import { Message } from "../../App.tsx";
 import Avatar from "../Avatar/Avatar.tsx";
 import "./Convo.css";
 
 interface ConvoProps {
-  convo: Record<"user" | "model", string[]>;
+  convo: { messages: Message[] };
 }
 
 export default function Convo(props: ConvoProps) {
-  const { user, model } = props.convo;
-
-  // Interleave user and model messages into a single array
-  const interleavedMessages = [];
-  const maxLength = Math.max(user.length, model.length);
-
-  for (let i = 0; i < maxLength; i++) {
-    if (i < user.length) {
-      interleavedMessages.push({ type: "user", message: user[i] });
-    }
-    if (i < model.length) {
-      interleavedMessages.push({ type: "model", message: model[i] });
-    }
-  }
+  const { messages } = props.convo;
 
   return (
     <div id="convo-container">
-      {interleavedMessages.map((msg, index) => (
-        <div key={index} className={`${msg.type}-container`}>
-          {msg.type === "user"
+      {messages.map((msg, index) => (
+        <div key={index} className={`${msg.role}-container`}>
+          {msg.role === "user"
             ? (
               <>
                 <div className="user-text">
-                  <span>{msg.message}</span>
+                  <span>{msg.content}</span>
                 </div>
                 <Avatar type="user" />
               </>
             )
             : (
               <>
-                <Avatar type="model" />
-                <div className="model-text">
-                  <span>{msg.message}</span>
+                <Avatar type="system" />
+                <div className="system-text">
+                  <span>{msg.content}</span>
                 </div>
               </>
             )}

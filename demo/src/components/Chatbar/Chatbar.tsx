@@ -1,13 +1,17 @@
 import { useRef } from "react";
 import "./Chatbar.css";
 import inferModel from "../Models/inferModel.ts";
-import { Page } from "../../App.tsx";
+import { Convo, Page } from "../../App.tsx";
+import React from "npm:@types/react@^18.3";
 
 interface ChatbarProps {
+  convo: Convo;
   setConvo: React.Dispatch<
-    React.SetStateAction<{ user: string[]; model: string[] }>
+    React.SetStateAction<Convo>
   >;
   currentPage: Page;
+  infoGathered: boolean;
+  setInfoGathered: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function Chatbar(props: ChatbarProps) {
@@ -18,7 +22,14 @@ export default function Chatbar(props: ChatbarProps) {
     if (textareaRef.current) {
       const userInput = textareaRef.current.innerText;
       if (userInput.trim()) {
-        inferModel(currentPage, setConvo, userInput);
+        inferModel(
+          currentPage,
+          setConvo,
+          props.convo,
+          userInput,
+          props.infoGathered,
+          props.setInfoGathered,
+        );
         textareaRef.current.innerText = "";
       }
     }

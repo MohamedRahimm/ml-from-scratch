@@ -13,13 +13,10 @@ const fetchData = async (): Promise<
     return [layers, scaler];
 };
 
-export async function inferWeightModel(input: string) {
-    const parsedInput = JSON.parse(input).map((row: number[]) =>
-        row.map(Number)
-    );
+export async function inferWeightModel(input: number[][]) {
     const [layers, scaler] = await fetchData();
 
-    let layerState: number[][] = parsedInput.map((row: number[]) =>
+    let layerState: number[][] = input.map((row: number[]) =>
         row.map((value, i) => (value - scaler.mean[i]) / scaler.scale[i])
     );
 
@@ -41,7 +38,12 @@ export async function inferWeightModel(input: string) {
     const exp = layerState[0].map((value) => Math.exp(value - max));
     const runningSum = exp.reduce((sum, value) => sum + value, 0);
     const normalizedExp = exp.map((value) => value / runningSum);
-    const map = ["underweight", "normal weight", "overweight", "obese"];
+    const map = [
+        "You are underweight",
+        "Your weight is normal",
+        "You are overweight",
+        "You are obese",
+    ];
 
     const maxPtr = normalizedExp.reduce((acc, curr, index) => {
         return curr > normalizedExp[acc] ? index : acc;

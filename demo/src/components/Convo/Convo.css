@@ -19,7 +19,7 @@
     padding: 0.5rem;
 }
 
-.model-container {
+.system-container {
     display: grid;
     grid-auto-flow: column;
     grid-template-columns: minmax(auto, 10%) minmax(auto, 90%);
@@ -28,7 +28,7 @@
     justify-self: left;
 }
 
-.model-text {
+.system-text {
     align-content: center;
     background-color: #2f2f2f;
     margin-top: 5%;

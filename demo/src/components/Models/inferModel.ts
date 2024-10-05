@@ -1,25 +1,35 @@
-import { Page } from "../../App.tsx";
-import { inferWeightModel } from "./weight.ts";
-export default function inferModel(
+import { Convo, Page } from "../../App.tsx";
+import inferLlama3 from "./weight-categorizer/groq.ts";
+import React from "npm:@types/react@^18.3";
+
+export default async function inferModel(
     currPage: Page,
     setConvo: React.Dispatch<
-        React.SetStateAction<{ user: string[]; model: string[] }>
+        React.SetStateAction<Convo>
     >,
+    convo: Convo,
     userInput: string,
+    infoGathered: boolean,
+    setInfoGathered: React.Dispatch<
+        React.SetStateAction<
+            boolean
+        >
+    >,
 ) {
     switch (currPage) {
         case "Weight Categorizer": {
-            (async function () {
-                const model = await inferWeightModel(userInput);
-                setConvo((prevConvo) => ({
-                    ...prevConvo,
-                    user: [...prevConvo.user, userInput],
-                    model: [...prevConvo.model, model],
-                }));
-            })();
+            await inferLlama3(
+                setConvo,
+                convo,
+                userInput,
+                infoGathered,
+                setInfoGathered,
+            );
+
             break;
         }
-        case ("Sentiment Analysis"): {
-        }
+
+            // case ("Sentiment Analysis"): {
+            // }
     }
 }
