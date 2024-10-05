@@ -4,7 +4,7 @@ import { Page } from "../../App.tsx";
 interface DropdownProps {
   currentPage: Page;
   pageNames: Page[];
-  setCurrentPage: React.Dispatch<React.SetStateAction<string>>;
+  setCurrentPage: React.Dispatch<React.SetStateAction<Page>>;
 }
 
 export default function Dropdown(props: DropdownProps) {

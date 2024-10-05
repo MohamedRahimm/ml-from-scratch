@@ -1,12 +1,13 @@
 import { useRef } from "react";
 import "./Chatbar.css";
 import inferModel from "../Models/inferModel.ts";
+import { Page } from "../../App.tsx";
 
 interface ChatbarProps {
   setConvo: React.Dispatch<
     React.SetStateAction<{ user: string[]; model: string[] }>
   >;
-  currentPage: string;
+  currentPage: Page;
 }
 
 export default function Chatbar(props: ChatbarProps) {

@@ -1,13 +1,14 @@
+import { Page } from "../../App.tsx";
 import { inferWeightModel } from "./weight.ts";
 export default function inferModel(
-    currPage: string,
+    currPage: Page,
     setConvo: React.Dispatch<
         React.SetStateAction<{ user: string[]; model: string[] }>
     >,
     userInput: string,
 ) {
     switch (currPage) {
-        case "weight categorizer": {
+        case "Weight Categorizer": {
             (async function () {
                 const model = await inferWeightModel(userInput);
                 setConvo((prevConvo) => ({
@@ -18,7 +19,7 @@ export default function inferModel(
             })();
             break;
         }
-        case ("sentiment analysis"): {
+        case ("Sentiment Analysis"): {
         }
     }
 }
