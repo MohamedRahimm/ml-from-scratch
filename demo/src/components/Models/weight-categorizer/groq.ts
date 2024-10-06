@@ -1,6 +1,14 @@
 import { Convo } from "../../../App.tsx";
 import { inferWeightModel } from "./weight.ts";
 
+interface weightObject {
+    age: number;
+    gender: "male" | "female";
+    height: string;
+    weight: string;
+    physicalActivityLevel: number;
+}
+
 async function fetchLlama3(userInput: string, convo: Convo) {
     return await fetch("https://groq-proxy-server.vercel.app/", {
         method: "POST",
@@ -12,7 +20,7 @@ async function fetchLlama3(userInput: string, convo: Convo) {
                 {
                     "role": "system",
                     "content":
-                        `You are an AI gathering 5 details about the user: their age, gender, height, weight, and physical activity level(on a scale from 1-4).If the user doesn't provide any of this information, continue requesting it in standalone questions until all details are received. Once you have gathered all the required data, WITH NO ADDITIONAL TEXT return a JSON object with the properties age,gender,height,physicalActivityLevel,weight with their respective values. Ensure that height is in the format xft,yin if the user responds in feet, or suffix the number with cm if given in cm, and weight is suffixed with lbs or kg where appropriate, and gender is either male or female, and physical activity level is in the provided range. DO NOT TRY TO CONVERT MEASUREMENTS AND TELL THE USER THE GIVEN CONSTRAINTS`,
+                        `You are an AI tasked with gathering 5 specific details from the user: age, gender, height, weight, and physical activity level (on a scale of 1-4). Ensure that each response follows the correct format: height should be either in the form "xft,yin" for feet and inches or with "cm" for centimeters; weight must be labeled with "lbs" or "kg"; gender should be either "male" or "female"; and the physical activity level must fall within the 1-4 range. If the user does not provide any of these details, ask standalone questions until all fields are complete. Once the information is gathered,respond with a JSON object with the properties age, gender, height, weight, and physicalActivityLevel, WITH NO ADDITIONAL TEXT, ensuring none of the values are null. Avoid converting measurements, and adhere strictly to the user's input formats.`,
                 },
                 ...convo.messages,
                 {
@@ -43,13 +51,7 @@ export function updateConvo(
         }],
     }));
 }
-function convertTo2DArray(data: {
-    age: number;
-    gender: "male" | "female";
-    height: string;
-    weight: string;
-    physicalActivityLevel: number;
-}): number[][] {
+function convertTo2DArray(data: weightObject): number[][] {
     let heightInCm: number;
     if (data.height.includes("cm")) {
         heightInCm = parseInt(data.height);
@@ -80,6 +82,25 @@ function convertTo2DArray(data: {
         ],
     ];
 }
+function preprocessData(data: string): string | weightObject {
+    data = data.slice(data.indexOf("{"), data.indexOf("}") + 1);
+    const cleanedData: weightObject = JSON.parse(data);
+    function isNotNum(val: any) {
+        return (typeof val !== "number" ||
+            (typeof val === "number" && isNaN(val)));
+    }
+    const numericFields: Array<keyof weightObject> = [
+        "age",
+        "physicalActivityLevel",
+    ]; // List of numeric fields
+
+    for (const prop of numericFields) {
+        if (isNotNum(cleanedData[prop])) {
+            return `The field ${prop} is not answered correctly. Reask the user for it.`;
+        }
+    }
+    return cleanedData;
+}
 export default async function inferLlama3(
     setConvo: React.Dispatch<
         React.SetStateAction<Convo>
@@ -95,12 +116,21 @@ export default async function inferLlama3(
         updateConvo(setConvo, "user", userInput);
         await fetchLlama3(userInput, convo).then((response) => response.json())
             .then(async (data) => {
-                if (data["message"][0] === "{") {
-                    setInfoGathered(true);
-                    const model = await inferWeightModel(
-                        convertTo2DArray(JSON.parse(data["message"])),
-                    );
-                    updateConvo(setConvo, "system", model);
+                if (data["message"].includes("{")) {
+                    const cleanData = preprocessData(data["message"]);
+                    if (typeof cleanData === "object") {
+                        const model = await inferWeightModel(
+                            convertTo2DArray(cleanData as weightObject),
+                        );
+                        updateConvo(setConvo, "system", model);
+                        setInfoGathered(true);
+                    } else {
+                        updateConvo(
+                            setConvo,
+                            "user",
+                            cleanData as string,
+                        );
+                    }
                 } else {
                     updateConvo(setConvo, "system", data["message"]);
                 }
