@@ -1,13 +1,13 @@
-import { Convo, Page } from "../../App.tsx";
+import { Conversation, Page } from "../../App.tsx";
 import inferLlama3 from "./weight-categorizer/groq.ts";
 // import React from "npm:@types/react@^18.3";
 
 export default async function inferModel(
     currPage: Page,
     setConvo: React.Dispatch<
-        React.SetStateAction<Convo>
+        React.SetStateAction<Conversation>
     >,
-    convo: Convo,
+    convo: Conversation,
     userInput: string,
     infoGathered: boolean,
     setInfoGathered: React.Dispatch<
@@ -29,7 +29,17 @@ export default async function inferModel(
             break;
         }
 
-            // case ("Sentiment Analysis"): {
-            // }
+        case ("Sentiment Analysis"): {
+            setConvo((prevConvo) => ({
+                messages: [...prevConvo.messages, {
+                    "role": "user",
+                    "content": userInput,
+                }, {
+                    "role": "system",
+                    "content": "Currently In Development",
+                }],
+                modelsUsed: [...prevConvo.modelsUsed, ""],
+            }));
+        }
     }
 }

@@ -1,4 +1,4 @@
-import { Convo } from "../../../App.tsx";
+import { Conversation, modelUsed } from "../../../App.tsx";
 import { inferWeightModel } from "./weight.ts";
 
 interface weightObject {
@@ -9,7 +9,7 @@ interface weightObject {
     physicalActivityLevel: number;
 }
 
-async function fetchLlama3(userInput: string, convo: Convo) {
+async function fetchLlama3(userInput: string, convo: Conversation) {
     return await fetch("https://groq-proxy-server.vercel.app/", {
         method: "POST",
         headers: {
@@ -39,16 +39,20 @@ async function fetchLlama3(userInput: string, convo: Convo) {
 }
 export function updateConvo(
     setConvo: React.Dispatch<
-        React.SetStateAction<Convo>
+        React.SetStateAction<Conversation>
     >,
     role: "user" | "system",
     content: string,
+    modelUsed?: modelUsed,
 ) {
     setConvo((prevConvo) => ({
         messages: [...prevConvo.messages, {
             role,
             content,
         }],
+        modelsUsed: modelUsed
+            ? [...prevConvo.modelsUsed, modelUsed]
+            : prevConvo.modelsUsed,
     }));
 }
 function convertTo2DArray(data: weightObject): number[][] {
@@ -103,9 +107,9 @@ function preprocessData(data: string): string | weightObject {
 }
 export default async function inferLlama3(
     setConvo: React.Dispatch<
-        React.SetStateAction<Convo>
+        React.SetStateAction<Conversation>
     >,
-    convo: Convo,
+    convo: Conversation,
     userInput: string,
     infoGathered: boolean,
     setInfoGathered: React.Dispatch<
@@ -122,7 +126,7 @@ export default async function inferLlama3(
                         const model = await inferWeightModel(
                             convertTo2DArray(cleanData as weightObject),
                         );
-                        updateConvo(setConvo, "system", model);
+                        updateConvo(setConvo, "system", model, "Weight-Cat");
                         setInfoGathered(true);
                     } else {
                         updateConvo(
@@ -132,7 +136,7 @@ export default async function inferLlama3(
                         );
                     }
                 } else {
-                    updateConvo(setConvo, "system", data["message"]);
+                    updateConvo(setConvo, "system", data["message"], "Llama3");
                 }
             })
             .catch(() => {
@@ -140,6 +144,7 @@ export default async function inferLlama3(
                     setConvo,
                     "system",
                     "There was an error please try again.",
+                    "Llama3",
                 );
             });
     } else {
@@ -152,6 +157,7 @@ export default async function inferLlama3(
                 content:
                     "Are you trying to change data? Hit the clear chat button",
             }],
+            modelsUsed: [...prevConvo.modelsUsed, ""],
         }));
     }
 }

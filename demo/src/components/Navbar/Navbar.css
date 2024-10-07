@@ -1,0 +1,87 @@
+#navbar {
+    display: flex;
+    justify-content: space-between;
+}
+
+#github-logo {
+    width: 100%;
+    max-width: 50px;
+}
+
+
+#dropdown>input:checked~ul {
+    display: inline-block;
+    border-radius: 0 0 var(--dropdown-border-radius) var(--dropdown-border-radius);
+}
+
+#dropdown:has(input:checked) {
+    border-radius: var(--dropdown-border-radius) var(--dropdown-border-radius) 0 0;
+}
+
+#dropdown>input:checked+span>svg {
+    transition: all .15s linear;
+    transform: rotate(180deg);
+
+}
+
+#dropdown>input:not(:checked)+span>svg {
+    transition: all .15s linear;
+    transform: rotate(0deg);
+}
+
+#dropdown>ul {
+    display: none;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    background-color: #2e2e2e;
+    width: 100%;
+    left: 0;
+    border-radius: var(--dropdown-border-radius);
+    cursor: pointer;
+}
+
+#dropdown>ul>li {
+    padding: var(--dropdown-padding);
+}
+
+#dropdown {
+    --dropdown-border-radius: 10px;
+    --dropdown-padding: 0.7em;
+    position: relative;
+    width: fit-content;
+    background-color: #2e2e2e;
+    max-width: 270px;
+    border-radius: var(--dropdown-border-radius);
+    padding: var(--dropdown-padding);
+}
+
+#dropdown>input {
+    display: inline-block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0px;
+    top: 0px;
+    cursor: pointer;
+    opacity: 0;
+    z-index: 2;
+}
+
+#dropdown>span>svg {
+    width: 2rem;
+}
+
+#dropdown>span {
+    display: flex;
+    text-wrap: nowrap;
+    align-items: center;
+    column-gap: 5%;
+    height: 100%;
+}
+
+#dropdown span,
+#dropdown ul {
+    font-weight: 600;
+}

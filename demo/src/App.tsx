@@ -2,7 +2,6 @@ import { useState } from "react";
 import "./App.css";
 import Chatbar from "./components/Chatbar/Chatbar.tsx";
 import Convo from "./components/Convo/Convo.tsx";
-import Dropdown from "./components/Dropdown/Dropdown.tsx";
 import Navbar from "./components/Navbar/Navbar.tsx";
 
 export interface Message {
@@ -20,27 +19,29 @@ export interface ChatRequest {
     stop: string | null;
 }
 
-export interface Convo {
+export type modelUsed = "Llama3" | "Weight-Cat" | "";
+export interface Conversation {
     messages: Message[];
+    modelsUsed: modelUsed[];
 }
 
 export type Page = "Weight Categorizer" | "Sentiment Analysis";
 export default function App() {
-    const [convo, setConvo] = useState<Convo>({
-        "messages": new Array<Message>(),
+    const [convo, setConvo] = useState<Conversation>({
+        "messages": [],
+        "modelsUsed": [],
     });
     const pageNames: Page[] = ["Weight Categorizer", "Sentiment Analysis"];
     const [currentPage, setCurrentPage] = useState<Page>(pageNames[0]);
     const [infoGathered, setInfoGathered] = useState<boolean>(false);
     return (
         <>
-            <Navbar></Navbar>
-            <Dropdown
+            <Navbar
                 currentPage={currentPage}
                 pageNames={pageNames}
                 setCurrentPage={setCurrentPage}
             >
-            </Dropdown>
+            </Navbar>
 
             <Convo convo={convo}></Convo>
             <Chatbar

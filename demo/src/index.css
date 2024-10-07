@@ -7,8 +7,6 @@ body,
 #root {
     width: 100%;
     height: 100%;
-    display: flex;
-    flex-direction: column;
 }
 
 body {
@@ -16,12 +14,16 @@ body {
     background-color: #1e1e1e;
     color: azure;
     font-family: "Inter", sans-serif;
-    height: 98%;
-    transform: translateY(1%);
+
 }
 
 #root {
+    display: flex;
+    flex-direction: column;
     width: 95%;
+    height: 98%;
+    transform: translate(2.5%, 1%);
     align-self: center;
     row-gap: 5vh;
+    min-width: 300px;
 }

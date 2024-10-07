@@ -1,14 +1,15 @@
-import { Message } from "../../App.tsx";
+import { Conversation } from "../../App.tsx";
 import Avatar from "../Avatar/Avatar.tsx";
 import "./Convo.css";
 
 interface ConvoProps {
-  convo: { messages: Message[] };
+  convo: Conversation;
 }
 
 export default function Convo(props: ConvoProps) {
-  const { messages } = props.convo;
-
+  const messages = props.convo.messages;
+  const modelsUsed = props.convo.modelsUsed;
+  let i = 0;
   return (
     <div id="convo-container">
       {messages.map((msg, index) => (
@@ -25,6 +26,9 @@ export default function Convo(props: ConvoProps) {
             : (
               <>
                 <Avatar type="system" />
+                <span className="model-used">
+                  {"Model Used " + modelsUsed[i++]}
+                </span>
                 <div className="system-text">
                   <span>{msg.content}</span>
                 </div>

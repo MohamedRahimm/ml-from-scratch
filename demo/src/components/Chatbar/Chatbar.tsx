@@ -1,13 +1,13 @@
 import { useRef } from "react";
 import "./Chatbar.css";
 import inferModel from "../Models/inferModel.ts";
-import { Convo, Page } from "../../App.tsx";
+import { Conversation, Page } from "../../App.tsx";
 // import React from "npm:@types/react@^18.3";
 
 interface ChatbarProps {
-  convo: Convo;
+  convo: Conversation;
   setConvo: React.Dispatch<
-    React.SetStateAction<Convo>
+    React.SetStateAction<Conversation>
   >;
   currentPage: Page;
   infoGathered: boolean;
@@ -41,6 +41,7 @@ export default function Chatbar(props: ChatbarProps) {
         <div id="chatbar-idk">
           <div
             contentEditable="true"
+            data-placeholder="Type Any Message"
             id="chatbar-textarea"
             ref={textareaRef}
             onKeyDown={(e) => {
@@ -48,6 +49,10 @@ export default function Chatbar(props: ChatbarProps) {
                 e.preventDefault();
                 handleClick();
               }
+            }}
+            onInput={(e) => {
+              let html = e.currentTarget.innerHTML;
+              if (html.trim() === "<br>") html = "";
             }}
           />
 
