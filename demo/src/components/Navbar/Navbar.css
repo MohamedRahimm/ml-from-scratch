@@ -4,8 +4,14 @@
 }
 
 #github-logo {
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 2px solid #fff;
+    border-radius: 100%;
+}
+
+#github-logo>svg {
     width: 100%;
-    max-width: 50px;
 }
 
 

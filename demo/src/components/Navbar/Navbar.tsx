@@ -13,7 +13,12 @@ export default function Navbar(props: NavbarProps) {
         .map((page) => (
             <li
                 key={page}
-                onClick={() => props.setCurrentPage(page)}
+                onClick={() => {
+                    props.setCurrentPage(page);
+                    (document.querySelector(
+                        "#dropdown>input",
+                    ) as HTMLInputElement).checked = false;
+                }}
             >
                 {page}
             </li>

@@ -75,6 +75,12 @@ export default function Chatbar(props: ChatbarProps) {
           </div>
         </div>
       </div>
+      <button
+        id="clear-chat-btn"
+        onClick={() => setConvo({ messages: [], modelsUsed: [] })}
+      >
+        Clear Chat
+      </button>
     </div>
   );
 }
