@@ -10,6 +10,10 @@
     border-radius: 100%;
 }
 
+#github-logo:hover {
+    transform: scale(1.01);
+}
+
 #github-logo>svg {
     width: 100%;
 }

@@ -3,6 +3,7 @@ import "./App.css";
 import Chatbar from "./components/Chatbar/Chatbar.tsx";
 import Convo from "./components/Convo/Convo.tsx";
 import Navbar from "./components/Navbar/Navbar.tsx";
+import ChatPopUp from "./components/ChatPopup/ChatPopup.tsx";
 
 export interface Message {
     role: "user" | "system";
@@ -34,6 +35,7 @@ export default function App() {
     const pageNames: Page[] = ["Weight Categorizer", "Sentiment Analysis"];
     const [currentPage, setCurrentPage] = useState<Page>(pageNames[0]);
     const [infoGathered, setInfoGathered] = useState<boolean>(false);
+    const [clearChat, setClearChat] = useState<boolean>(false);
     return (
         <>
             <Navbar
@@ -42,7 +44,10 @@ export default function App() {
                 setCurrentPage={setCurrentPage}
             >
             </Navbar>
-
+            {clearChat && (
+                <ChatPopUp setClearChat={setClearChat} setConvo={setConvo}>
+                </ChatPopUp>
+            )}
             <Convo convo={convo}></Convo>
             <Chatbar
                 convo={convo}
@@ -50,6 +55,7 @@ export default function App() {
                 currentPage={currentPage}
                 infoGathered={infoGathered}
                 setInfoGathered={setInfoGathered}
+                setClearChat={setClearChat}
             >
             </Chatbar>
         </>

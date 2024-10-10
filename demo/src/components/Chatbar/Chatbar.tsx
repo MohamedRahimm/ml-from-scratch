@@ -12,11 +12,13 @@ interface ChatbarProps {
   currentPage: Page;
   infoGathered: boolean;
   setInfoGathered: React.Dispatch<React.SetStateAction<boolean>>;
+  setClearChat: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function Chatbar(props: ChatbarProps) {
   const setConvo = props.setConvo;
   const currentPage = props.currentPage;
+  const setClearChat = props.setClearChat;
   const textareaRef = useRef<HTMLDivElement>(null);
   const handleClick = () => {
     if (textareaRef.current) {
@@ -57,7 +59,10 @@ export default function Chatbar(props: ChatbarProps) {
           />
 
           <div id="chatbar-btn-container">
-            <button id="chatbar-btn" onClick={handleClick}>
+            <button
+              id="chatbar-btn"
+              onClick={handleClick}
+            >
               <svg
                 viewBox="0 0 32 32"
                 fill="none"
@@ -77,7 +82,7 @@ export default function Chatbar(props: ChatbarProps) {
       </div>
       <button
         id="clear-chat-btn"
-        onClick={() => setConvo({ messages: [], modelsUsed: [] })}
+        onClick={() => setClearChat(true)}
       >
         Clear Chat
       </button>
