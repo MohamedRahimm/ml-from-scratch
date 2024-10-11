@@ -82,7 +82,11 @@ export default function Chatbar(props: ChatbarProps) {
       </div>
       <button
         id="clear-chat-btn"
-        onClick={() => setClearChat(true)}
+        onClick={() => {
+          setClearChat(true);
+          (document.querySelector("#convo-container")! as HTMLDivElement).style
+            .overflowY = "hidden";
+        }}
       >
         Clear Chat
       </button>

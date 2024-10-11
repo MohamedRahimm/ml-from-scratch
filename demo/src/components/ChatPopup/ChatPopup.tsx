@@ -1,4 +1,3 @@
-// import React from "npm:@types/react@^18.3";
 import "./ChatPopup.css";
 import { Conversation } from "../../App.tsx";
 interface ChatPopUpProps {
@@ -21,13 +20,27 @@ export default function ChatPopUp(props: ChatPopUpProps) {
                         onClick={() => {
                             setConvo({ "messages": [], modelsUsed: [] });
                             setClearChat(false);
+                            (document.querySelector(
+                                "#convo-container",
+                            )! as HTMLDivElement).style
+                                .overflowY = "";
                         }}
                     >
                         Clear Chat
                     </button>
                     <button
                         className="popup-btn"
-                        onClick={() => setClearChat(false)}
+                        onClick={() => {
+                            setClearChat(false);
+                            (document.querySelector(
+                                "#convo-container",
+                            )! as HTMLDivElement).style
+                                .overflowY = "";
+                            document.querySelector("#chatbar")?.scrollIntoView({
+                                "behavior": "smooth",
+                                "block": "end",
+                            });
+                        }}
                     >
                         Cancel
                     </button>

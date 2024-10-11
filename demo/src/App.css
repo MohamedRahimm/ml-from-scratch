@@ -1,0 +1,8 @@
+#template-container {
+    display: flex;
+    align-items: end;
+    margin-top: auto;
+    width: 95%;
+    height: 100%;
+    align-self: center;
+}

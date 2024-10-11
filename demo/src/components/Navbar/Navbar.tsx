@@ -1,10 +1,10 @@
 import "./Navbar.css";
-import { Page } from "../../App.tsx";
-// ADD TO NAVBAR
+import { Conversation, Page } from "../../App.tsx";
 interface NavbarProps {
     currentPage: Page;
     pageNames: Page[];
     setCurrentPage: React.Dispatch<React.SetStateAction<Page>>;
+    setConvo: React.Dispatch<React.SetStateAction<Conversation>>;
 }
 
 export default function Navbar(props: NavbarProps) {
@@ -18,6 +18,7 @@ export default function Navbar(props: NavbarProps) {
                     (document.querySelector(
                         "#dropdown>input",
                     ) as HTMLInputElement).checked = false;
+                    props.setConvo({ messages: [], modelsUsed: [] });
                 }}
             >
                 {page}
@@ -35,7 +36,7 @@ export default function Navbar(props: NavbarProps) {
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
-                        strokeWidth="2"
+                        strokeWidth="2.5"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                     >

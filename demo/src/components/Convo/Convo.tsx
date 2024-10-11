@@ -26,9 +26,13 @@ export default function Convo(props: ConvoProps) {
             : (
               <>
                 <Avatar type="system" />
-                <span className="model-used">
-                  {"Model Used " + modelsUsed[i++]}
-                </span>
+
+                {modelsUsed[i] && (
+                  <span className="model-used">
+                    {"Model Used: " + modelsUsed[i++]}
+                  </span>
+                )}
+
                 <div className="system-text">
                   <span>{msg.content}</span>
                 </div>

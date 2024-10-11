@@ -1,6 +1,5 @@
 import { Conversation, modelUsed } from "../../../App.tsx";
 import { inferWeightModel } from "./weight.ts";
-
 interface weightObject {
     age: number;
     gender: "male" | "female";
@@ -95,12 +94,18 @@ function preprocessData(data: string): string | weightObject {
     }
     const numericFields: Array<keyof weightObject> = [
         "age",
+        "gender",
+        "height",
+        "weight",
         "physicalActivityLevel",
-    ]; // List of numeric fields
+    ];
 
     for (const prop of numericFields) {
         if (isNotNum(cleanedData[prop])) {
-            return `The field ${prop} is not answered correctly. Reask the user for it.`;
+            if (prop === "physicalActivityLevel") {
+                return `What would you say your physical activity level is on a scale from 1-4?`;
+            }
+            return `What is your ${prop} ?`;
         }
     }
     return cleanedData;
@@ -131,7 +136,7 @@ export default async function inferLlama3(
                     } else {
                         updateConvo(
                             setConvo,
-                            "user",
+                            "system",
                             cleanData as string,
                         );
                     }
@@ -155,7 +160,7 @@ export default async function inferLlama3(
             }, {
                 role: "system",
                 content:
-                    "Are you trying to change data? Hit the clear chat button",
+                    "Are you trying to change your information? Hit the clear chat button",
             }],
             modelsUsed: [...prevConvo.modelsUsed, ""],
         }));

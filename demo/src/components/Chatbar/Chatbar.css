@@ -1,14 +1,9 @@
 [contenteditable][data-placeholder]:empty::before {
     content: attr(data-placeholder);
-    position: absolute;
     color: gray;
     background-color: transparent;
     font-size: 0.9rem;
-    align-self: center;
     font-weight: 500;
-    bottom: 0;
-    height: 100%;
-    align-content: center;
 }
 
 #chatbar-container {
@@ -74,7 +69,7 @@
 }
 
 #chatbar-btn>svg {
-    width: 100%;
+    width: 1.5rem;
 }
 
 #clear-chat-btn {
