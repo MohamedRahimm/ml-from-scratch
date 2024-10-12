@@ -1,7 +1,6 @@
 import { Conversation, Page } from "../../App.tsx";
 import inferLlama3 from "./weight-categorizer/groq.ts";
-// import React from "npm:@types/react@^18.3";
-
+import inferSentimentModel from "./sentiment.ts";
 export default async function inferModel(
     currPage: Page,
     setConvo: React.Dispatch<
@@ -30,15 +29,16 @@ export default async function inferModel(
         }
 
         case ("Sentiment Analysis"): {
+            const output = await inferSentimentModel(userInput);
             setConvo((prevConvo) => ({
                 messages: [...prevConvo.messages, {
                     "role": "user",
                     "content": userInput,
                 }, {
                     "role": "system",
-                    "content": "Currently In Development",
+                    "content": output,
                 }],
-                modelsUsed: [...prevConvo.modelsUsed, ""],
+                modelsUsed: [...prevConvo.modelsUsed, "Senti-Analysis"],
             }));
         }
     }

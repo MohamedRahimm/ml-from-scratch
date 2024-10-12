@@ -32,10 +32,10 @@
 .system-text {
     align-content: center;
     background-color: #2f2f2f;
-    margin-top: 0.9rem;
+    margin-top: .6rem;
     border-radius: 25px;
     padding: 0.5rem;
-    grid-column: 2;
+
 }
 
 .model-used {
@@ -43,8 +43,6 @@
     background-color: transparent;
     text-wrap: nowrap;
     font-size: 0.8rem;
-    grid-column: 2;
-    align-self: end;
     padding-left: 0.5em;
     position: relative;
     top: 5px;

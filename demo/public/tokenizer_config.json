@@ -1,0 +1,10 @@
+{
+    "tokenizer_class": "PreTrainedTokenizer",
+    "do_lower_case": false,
+    "special_tokens_map": {
+        "pad_token": "<pad>"
+    },
+    "model_max_length": 150,
+    "padding_side": "right",
+    "truncation_side": "right"
+}

@@ -1,7 +1,6 @@
 import { Conversation } from "../../App.tsx";
 import Avatar from "../Avatar/Avatar.tsx";
 import "./Convo.css";
-
 interface ConvoProps {
   convo: Conversation;
 }
@@ -27,14 +26,13 @@ export default function Convo(props: ConvoProps) {
               <>
                 <Avatar type="system" />
 
-                {modelsUsed[i] && (
-                  <span className="model-used">
-                    {"Model Used: " + modelsUsed[i++]}
-                  </span>
-                )}
-
-                <div className="system-text">
-                  <span>{msg.content}</span>
+                <div>
+                  {modelsUsed[i] && (
+                    <span className="model-used">
+                      {"Model Used: " + modelsUsed[i++]}
+                    </span>
+                  )}
+                  <p className="system-text">{msg.content}</p>
                 </div>
               </>
             )}
