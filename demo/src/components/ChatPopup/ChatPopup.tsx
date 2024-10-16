@@ -1,12 +1,9 @@
 import "./ChatPopup.css";
-import { Conversation } from "../../App.tsx";
+import { ConversationState } from "../../definitions.ts";
 interface ChatPopUpProps {
-    setClearChat: React.Dispatch<React.SetStateAction<boolean>>;
-    setConvo: React.Dispatch<React.SetStateAction<Conversation>>;
+    setConvoState: React.Dispatch<React.SetStateAction<ConversationState>>;
 }
 export default function ChatPopUp(props: ChatPopUpProps) {
-    const setConvo = props.setConvo;
-    const setClearChat = props.setClearChat;
     return (
         <div id="popup-container">
             <div id="popup">
@@ -18,8 +15,13 @@ export default function ChatPopUp(props: ChatPopUpProps) {
                         className="popup-btn"
                         id="clear-popup-btn"
                         onClick={() => {
-                            setConvo({ "messages": [], modelsUsed: [] });
-                            setClearChat(false);
+                            props.setConvoState({
+                                "messages": [],
+                                modelsUsed: [],
+                                clearChat: false,
+                                infoGathered: false,
+                            });
+
                             (document.querySelector(
                                 "#convo-container",
                             )! as HTMLDivElement).style
@@ -31,7 +33,10 @@ export default function ChatPopUp(props: ChatPopUpProps) {
                     <button
                         className="popup-btn"
                         onClick={() => {
-                            setClearChat(false);
+                            props.setConvoState((prevState) => ({
+                                ...prevState,
+                                clearChat: false,
+                            }));
                             (document.querySelector(
                                 "#convo-container",
                             )! as HTMLDivElement).style

@@ -1,13 +1,13 @@
-import { Conversation } from "../../App.tsx";
+import { ConversationState } from "../../definitions.ts";
 import Avatar from "../Avatar/Avatar.tsx";
 import "./Convo.css";
 interface ConvoProps {
-  convo: Conversation;
+  convoState: ConversationState;
 }
 
 export default function Convo(props: ConvoProps) {
-  const messages = props.convo.messages;
-  const modelsUsed = props.convo.modelsUsed;
+  const messages = props.convoState.messages;
+  const modelsUsed = props.convoState.modelsUsed;
   let i = 0;
   return (
     <div id="convo-container">

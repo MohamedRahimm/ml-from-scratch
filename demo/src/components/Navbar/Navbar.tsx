@@ -1,15 +1,15 @@
 import "./Navbar.css";
-import { Conversation, Page } from "../../App.tsx";
+import { ConversationState, Page } from "../../definitions.ts";
 interface NavbarProps {
+    setConvoState: React.Dispatch<React.SetStateAction<ConversationState>>;
     currentPage: Page;
     pageNames: Page[];
     setCurrentPage: React.Dispatch<React.SetStateAction<Page>>;
-    setConvo: React.Dispatch<React.SetStateAction<Conversation>>;
 }
 
 export default function Navbar(props: NavbarProps) {
     const pageElements = props.pageNames
-        .filter((page) => page !== props.currentPage) // Filter out the current page
+        .filter((page) => page !== props.currentPage)
         .map((page) => (
             <li
                 key={page}
@@ -18,12 +18,17 @@ export default function Navbar(props: NavbarProps) {
                     (document.querySelector(
                         "#dropdown>input",
                     ) as HTMLInputElement).checked = false;
-                    props.setConvo({ messages: [], modelsUsed: [] });
+                    props.setConvoState({
+                        infoGathered: false,
+                        clearChat: false,
+                        messages: [],
+                        modelsUsed: [],
+                    });
                 }}
             >
                 {page}
             </li>
-        )); // Return each <li> with a unique key
+        ));
 
     return (
         <div id="navbar">

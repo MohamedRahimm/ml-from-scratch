@@ -1,6 +1,4 @@
-import { all, create } from "mathjs";
-const config = {};
-const math = create(all, config);
+import { add, multiply } from "mathjs";
 const fetchData = async (): Promise<
     [number[][], { mean: number[]; scale: number[] }]
 > => {
@@ -13,7 +11,7 @@ const fetchData = async (): Promise<
     return [layers, scaler];
 };
 
-export async function inferWeightModel(input: number[][]) {
+export default async function inferWeightModel(input: number[][]) {
     const [layers, scaler] = await fetchData();
 
     let layerState: number[][] = input.map((row: number[]) =>
@@ -22,8 +20,8 @@ export async function inferWeightModel(input: number[][]) {
 
     layers.forEach((layer: number[], i: number) => {
         if (i < layers.length - 1 && layer.length > 0) {
-            layerState = math.add(
-                math.multiply(layerState, layer[0]),
+            layerState = add(
+                multiply(layerState, layer[0]),
                 layer[1],
             ) as number[][];
         } else {

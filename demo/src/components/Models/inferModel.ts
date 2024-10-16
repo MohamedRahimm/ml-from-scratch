@@ -1,45 +1,32 @@
-import { Conversation, Page } from "../../App.tsx";
-import inferLlama3 from "./weight-categorizer/groq.ts";
-import inferSentimentModel from "./sentiment.ts";
+import { ConversationState, Page } from "../../definitions.ts";
+
 export default async function inferModel(
-    currPage: Page,
-    setConvo: React.Dispatch<
-        React.SetStateAction<Conversation>
+    setConvoState: React.Dispatch<
+        React.SetStateAction<ConversationState>
     >,
-    convo: Conversation,
+    convoState: ConversationState,
     userInput: string,
-    infoGathered: boolean,
-    setInfoGathered: React.Dispatch<
-        React.SetStateAction<
-            boolean
-        >
-    >,
+    currPage: Page,
 ) {
     switch (currPage) {
         case "Weight Categorizer": {
-            await inferLlama3(
-                setConvo,
-                convo,
-                userInput,
-                infoGathered,
-                setInfoGathered,
-            );
+            await import("./weight-categorizer/groq.ts").then(async (
+                { default: inferLlama3 },
+            ) => {
+                await inferLlama3(
+                    setConvoState,
+                    convoState,
+                    userInput,
+                );
+            });
 
             break;
         }
 
         case ("Sentiment Analysis"): {
-            const output = await inferSentimentModel(userInput);
-            setConvo((prevConvo) => ({
-                messages: [...prevConvo.messages, {
-                    "role": "user",
-                    "content": userInput,
-                }, {
-                    "role": "system",
-                    "content": output,
-                }],
-                modelsUsed: [...prevConvo.modelsUsed, "Senti-Analysis"],
-            }));
+            await import("./sentiment.ts").then(async (
+                { default: inferSentimentModel },
+            ) => await inferSentimentModel(userInput, setConvoState));
         }
     }
 }

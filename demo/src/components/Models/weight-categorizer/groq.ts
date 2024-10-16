@@ -1,5 +1,5 @@
-import { Conversation, modelUsed } from "../../../App.tsx";
-import { inferWeightModel } from "./weight.ts";
+import { ConversationState, modelUsed } from "../../../definitions.ts";
+
 interface weightObject {
     age: number;
     gender: "male" | "female";
@@ -8,7 +8,7 @@ interface weightObject {
     physicalActivityLevel: number;
 }
 
-async function fetchLlama3(userInput: string, convo: Conversation) {
+async function fetchLlama3(userInput: string, convoState: ConversationState) {
     return await fetch("https://groq-proxy-server.vercel.app/", {
         method: "POST",
         headers: {
@@ -21,7 +21,7 @@ async function fetchLlama3(userInput: string, convo: Conversation) {
                     "content":
                         `You are an AI tasked with gathering 5 specific details from the user: age, gender, height, weight, and physical activity level (on a scale of 1-4). Ensure that each response follows the correct format: height should be either in the form "xft,yin" for feet and inches or with "cm" for centimeters; weight must be labeled with "lbs" or "kg"; gender should be either "male" or "female"; and the physical activity level must fall within the 1-4 range. If the user does not provide any of these details, ask standalone questions until all fields are complete. Once the information is gathered,respond with a JSON object with the properties age, gender, height, weight, and physicalActivityLevel, WITH NO ADDITIONAL TEXT, ensuring none of the values are null. Avoid converting measurements, and adhere strictly to the user's input formats.`,
                 },
-                ...convo.messages,
+                ...convoState.messages,
                 {
                     "role": "user",
                     "content": userInput,
@@ -36,24 +36,7 @@ async function fetchLlama3(userInput: string, convo: Conversation) {
         }),
     });
 }
-export function updateConvo(
-    setConvo: React.Dispatch<
-        React.SetStateAction<Conversation>
-    >,
-    role: "user" | "system",
-    content: string,
-    modelUsed?: modelUsed,
-) {
-    setConvo((prevConvo) => ({
-        messages: [...prevConvo.messages, {
-            role,
-            content,
-        }],
-        modelsUsed: modelUsed
-            ? [...prevConvo.modelsUsed, modelUsed]
-            : prevConvo.modelsUsed,
-    }));
-}
+
 function convertTo2DArray(data: weightObject): number[][] {
     let heightInCm: number;
     if (data.height.includes("cm")) {
@@ -88,6 +71,7 @@ function convertTo2DArray(data: weightObject): number[][] {
 function preprocessData(data: string): string | weightObject {
     data = data.slice(data.indexOf("{"), data.indexOf("}") + 1);
     const cleanedData: weightObject = JSON.parse(data);
+    // deno-lint-ignore no-explicit-any
     function isNotNum(val: any) {
         return (typeof val !== "number" ||
             (typeof val === "number" && isNaN(val)));
@@ -101,60 +85,81 @@ function preprocessData(data: string): string | weightObject {
     ];
 
     for (const prop of numericFields) {
-        if (isNotNum(cleanedData[prop])) {
-            if (prop === "physicalActivityLevel") {
-                return `What would you say your physical activity level is on a scale from 1-4?`;
-            }
-            return `What is your ${prop} ?`;
-        }
+        if (prop === "physicalActivityLevel" && isNotNum(cleanedData[prop])) {
+            return `What would you say your physical activity level is on a scale from 1-4?`;
+        } else if (typeof prop !== "string") return `What is your ${prop}?`;
     }
     return cleanedData;
 }
 export default async function inferLlama3(
-    setConvo: React.Dispatch<
-        React.SetStateAction<Conversation>
+    setConvoState: React.Dispatch<
+        React.SetStateAction<ConversationState>
     >,
-    convo: Conversation,
+    convoState: ConversationState,
     userInput: string,
-    infoGathered: boolean,
-    setInfoGathered: React.Dispatch<
-        React.SetStateAction<boolean>
-    >,
 ) {
-    if (!infoGathered) {
-        updateConvo(setConvo, "user", userInput);
-        await fetchLlama3(userInput, convo).then((response) => response.json())
+    function updateConvo(
+        role: "user" | "system",
+        content: string,
+        modelUsed?: modelUsed,
+    ) {
+        setConvoState((prevConvo) => ({
+            ...prevConvo,
+            messages: [...prevConvo.messages, {
+                role,
+                content,
+            }],
+            modelsUsed: modelUsed
+                ? [...prevConvo.modelsUsed, modelUsed]
+                : prevConvo.modelsUsed,
+        }));
+    }
+    if (!convoState.infoGathered) {
+        updateConvo("user", userInput);
+        await fetchLlama3(userInput, convoState).then((response) =>
+            response.json()
+        )
             .then(async (data) => {
                 if (data["message"].includes("{")) {
                     const cleanData = preprocessData(data["message"]);
                     if (typeof cleanData === "object") {
-                        const model = await inferWeightModel(
-                            convertTo2DArray(cleanData as weightObject),
+                        await import("./weight.ts").then(
+                            async ({ default: inferWeightModel }) => {
+                                const model = await inferWeightModel(
+                                    convertTo2DArray(cleanData as weightObject),
+                                );
+                                updateConvo(
+                                    "system",
+                                    model,
+                                    "Weight-Cat",
+                                );
+                                setConvoState((prevState) => ({
+                                    ...prevState,
+                                    infoGathered: true,
+                                }));
+                            },
                         );
-                        updateConvo(setConvo, "system", model, "Weight-Cat");
-                        setInfoGathered(true);
                     } else {
                         updateConvo(
-                            setConvo,
                             "system",
                             cleanData as string,
                         );
                     }
                 } else {
-                    updateConvo(setConvo, "system", data["message"], "Llama3");
+                    updateConvo("system", data["message"], "Llama3");
                 }
             })
             .catch(() => {
                 updateConvo(
-                    setConvo,
                     "system",
                     "There was an error please try again.",
                     "Llama3",
                 );
             });
     } else {
-        setConvo((prevConvo) => ({
-            messages: [...prevConvo.messages, {
+        setConvoState((prevState) => ({
+            ...prevState,
+            messages: [...prevState.messages, {
                 role: "user",
                 content: userInput,
             }, {
@@ -162,7 +167,7 @@ export default async function inferLlama3(
                 content:
                     "Are you trying to change your information? Hit the clear chat button",
             }],
-            modelsUsed: [...prevConvo.modelsUsed, ""],
+            modelsUsed: [...prevState.modelsUsed, ""],
         }));
     }
 }

@@ -1,36 +1,26 @@
 import { useRef } from "react";
 import "./Chatbar.css";
 import inferModel from "../Models/inferModel.ts";
-import { Conversation, Page } from "../../App.tsx";
-// import React from "npm:@types/react@^18.3";
+import { ConversationState, Page } from "../../definitions.ts";
 
 interface ChatbarProps {
-  convo: Conversation;
-  setConvo: React.Dispatch<
-    React.SetStateAction<Conversation>
-  >;
+  convoState: ConversationState;
+  setConvoState: React.Dispatch<React.SetStateAction<ConversationState>>;
   currentPage: Page;
-  infoGathered: boolean;
-  setInfoGathered: React.Dispatch<React.SetStateAction<boolean>>;
-  setClearChat: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function Chatbar(props: ChatbarProps) {
-  const setConvo = props.setConvo;
   const currentPage = props.currentPage;
-  const setClearChat = props.setClearChat;
   const textareaRef = useRef<HTMLDivElement>(null);
   const handleClick = () => {
     if (textareaRef.current) {
       const userInput = textareaRef.current.innerText;
       if (userInput.trim()) {
         inferModel(
-          currentPage,
-          setConvo,
-          props.convo,
+          props.setConvoState,
+          props.convoState,
           userInput,
-          props.infoGathered,
-          props.setInfoGathered,
+          currentPage,
         );
         textareaRef.current.innerText = "";
       }
@@ -83,7 +73,10 @@ export default function Chatbar(props: ChatbarProps) {
       <button
         id="clear-chat-btn"
         onClick={() => {
-          setClearChat(true);
+          props.setConvoState((prevConvo) => ({
+            ...prevConvo,
+            clearChat: true,
+          }));
           (document.querySelector("#convo-container")! as HTMLDivElement).style
             .overflowY = "hidden";
         }}
