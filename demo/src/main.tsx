@@ -4,7 +4,7 @@ import { HashRouter, Route, Routes } from "react-router";
 import App from "./App.tsx";
 import "./index.css";
 import Home from "./components/Home/Home.tsx";
-import { ConversationState, Page } from "./definitions.ts";
+import { Page } from "./definitions.ts";
 
 
 export const pageNames: Page[] = ["Weight Categorizer", "Sentiment Analysis"];
@@ -15,7 +15,7 @@ export const urlMapper: Record<Page, string> = {
 
 
 createRoot(document.getElementById("root")!).render(
-    <HashRouter basename="/ml-from-scratch">
+    <HashRouter>
         <StrictMode>
             <Routes>
                 <Route index path="/" element={<Home></Home>}></Route>

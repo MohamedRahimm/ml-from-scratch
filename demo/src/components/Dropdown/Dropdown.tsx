@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { ConversationState, Page } from "../../definitions";
 import "./Dropdown.css"
 import { urlMapper } from "../../main";
