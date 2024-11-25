@@ -30,10 +30,9 @@ export default function Chatbar(props: ChatbarProps) {
   return (
     <div id="chatbar-container">
       <div id="chatbar">
-        <div id="chatbar-idk">
+        <div id="textarea-container">
           <div
             contentEditable="true"
-            data-placeholder="Type Any Message"
             id="chatbar-textarea"
             ref={textareaRef}
             onKeyDown={(e) => {
@@ -44,10 +43,14 @@ export default function Chatbar(props: ChatbarProps) {
             }}
             onInput={(e) => {
               let html = e.currentTarget.innerHTML;
-              if (html.trim() === "<br>") html = "";
+              const placeholder = document.querySelector("#chatbar-placeholder");
+              if (html.trim() !== "<br>") {
+                placeholder?.classList.add("hidden")
+              }
+              else placeholder?.classList.remove("hidden")
             }}
-          />
-
+          ></div>
+          <span id="chatbar-placeholder">Type Any Message</span>
           <div id="chatbar-btn-container">
             <button
               id="chatbar-btn"
@@ -83,6 +86,7 @@ export default function Chatbar(props: ChatbarProps) {
       >
         Clear Chat
       </button>
+      <span id="warning">This model was trained on <a href={currentPage === "Weight Categorizer" ? "https://www.kaggle.com/datasets/mrsimple07/obesity-prediction" : "https://www.kaggle.com/datasets/lakshmi25npathi/imdb-dataset-of-50k-movie-reviews"}>this</a> dataset and might produce inaccurate information.</span>
     </div>
   );
 }

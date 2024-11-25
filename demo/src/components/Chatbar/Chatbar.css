@@ -1,9 +1,14 @@
-[contenteditable][data-placeholder]:empty::before {
-    content: attr(data-placeholder);
+.hidden {
+    display: none;
+}
+
+#chatbar-placeholder {
+    position: absolute;
     color: gray;
     background-color: transparent;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     font-weight: 500;
+    align-self: center;
 }
 
 #chatbar-container {
@@ -12,6 +17,8 @@
     width: 95%;
     display: flex;
     column-gap: 10px;
+    flex-direction: row;
+    flex-wrap: wrap;
 }
 
 #chatbar {
@@ -25,9 +32,10 @@
     background-color: white;
     max-height: 150px;
     background-color: #2f2f2f;
+    flex: 1;
 }
 
-#chatbar-idk {
+#textarea-container {
     display: flex;
     align-items: flex-end;
     gap: 6px;
@@ -96,4 +104,18 @@
 
 #clear-chat-btn:focus {
     box-shadow: 0 0 0 .2rem rgba(220, 53, 69, .5);
+}
+
+#warning {
+    text-align: center;
+    color: azure;
+    padding-left: 16px;
+    margin-top: 4px;
+    font-size: 0.7rem;
+    flex: 1 0 100%;
+}
+
+#warning>a {
+    text-decoration: none;
+    color: rgb(169, 0, 169);
 }
